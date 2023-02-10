@@ -22,9 +22,7 @@
     "jade": "~1.11.0",
     "multer": "^1.4.5-lts.1",
     "multiformats": "^10.0.2",
-    "serve-favicon": "^2.5.0",
-    "twitter-api-sdk": "^1.2.1",
-    "twitter-api-v2": "^1.12.9"
+    "serve-favicon": "^2.5.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.15"
