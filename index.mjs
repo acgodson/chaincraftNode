@@ -4,7 +4,6 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import dotenv from "dotenv";
 import indexRouter from "./routes/index.mjs";
-import ownersRouter from "./routes/owners.mjs";
 import cidRouter from "./routes/cid.mjs";
 dotenv.config();
 
@@ -22,7 +21,6 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.use("/", indexRouter);
-app.use("/owners", ownersRouter);
 app.use("/cid", cidRouter);
 
 // catch 404 and forward to error handler
