@@ -5,7 +5,7 @@ import multer from "multer";
 import fs from "fs";
 
 const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
+const upload = multer({ dest: "public/" });
 const router = express.Router();
 
 //Function to convert hexstring to base 64
@@ -28,14 +28,13 @@ export function encodeCID(cid) {
   return base64;
 }
 
-router.post("/pin", upload.single("img"), async function (req, res) {
+router.post("/", upload.single("img"), async function (req, res) {
   try {
     const file = req.file;
     if (req.method === "POST") {
       if (!file) {
         console.log("no file");
       }
-
       const imageOptions = {
         pinataMetadata: {
           name: "chaincraft-web",
@@ -44,28 +43,45 @@ router.post("/pin", upload.single("img"), async function (req, res) {
           cidVersion: 0,
         },
       };
-      const buffer = req.file.buffer;
-      const ext = file.mimetype.slice(6);
-      const filePath = `images/${imageOptions.pinataMetadata.name}.${ext}`;
-      console.log(filePath);
-      fs.writeFileSync(`${filePath}`, buffer, async (err) => {});
+      const path = file.path;
+      async function mana(buffer) {
+        const ext = file.mimetype.slice(6);
+        const filePath = `images/${imageOptions.pinataMetadata.name}.${ext}`;
+        console.log(filePath);
+        fs.writeFileSync(`${filePath}`, buffer);
 
-      if (filePath) {
-        const image = fs.createReadStream(filePath);
-        console.log();
-        const imagePinned = await pinata.pinFileToIPFS(image, imageOptions);
-        if (imagePinned) {
-          console.log(imagePinned.IpfsHash);
-          const ipfsCid = imagePinned.IpfsHash;
-          const integrity = encodeCID(ipfsCid);
-          const imageIntegrity = "sha256-" + integrity;
-          const obj = {
-            ipfsCid: ipfsCid,
-            imageIntegrity: imageIntegrity,
-          };
-          res.status(200).json(obj);
+        if (filePath) {
+          const image = fs.createReadStream(filePath);
+          console.log();
+          const imagePinned = await pinata.pinFileToIPFS(image, imageOptions);
+          if (imagePinned) {
+            console.log(imagePinned.IpfsHash);
+            const ipfsCid = imagePinned.IpfsHash;
+            const integrity = encodeCID(ipfsCid);
+            const imageIntegrity = "sha256-" + integrity;
+            const obj = {
+              ipfsCid: ipfsCid,
+              imageIntegrity: imageIntegrity,
+            };
+            res.status(200).json(obj);
+          }
         }
       }
+
+      fs.readFile(path, (err, data) => {
+        if (err) {
+          console.log(err);
+          return;
+        }
+        if (data) {
+          //console.log(data);
+          mana(data);
+        }
+      });
+
+      fs.unlink(path, function (err) {
+        console.log(path + " was deleted.");
+      });
     }
   } catch (error) {
     console.error(error);
@@ -94,7 +110,7 @@ router.post("/pinMeta", upload.single("img"), async function (req, res) {
       const ext = file.mimetype.slice(6);
       const filePath = `images/${imageOptions.pinataMetadata.name}.${ext}`;
       console.log(filePath);
-      fs.writeFileSync(`${filePath}`, buffer, async (err) => {});
+      fs.writeFileSync(`${filePath}`, buffer);
 
       if (filePath) {
         const image = fs.createReadStream(filePath);
