@@ -5,7 +5,7 @@ import multer from "multer";
 import fs from "fs";
 
 const storage = multer.memoryStorage();
-const upload = multer({ dest: "public/" });
+const upload = multer({ dest: "tmp/" });
 const router = express.Router();
 
 //Function to convert hexstring to base 64
