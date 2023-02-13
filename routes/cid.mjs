@@ -44,6 +44,7 @@ router.post("/", upload.single("img"), async function (req, res) {
         },
       };
       const path = file.path;
+      console.log(path)
       async function mana(buffer) {
         const ext = file.mimetype.slice(6);
         const filePath = `images/${imageOptions.pinataMetadata.name}.${ext}`;
@@ -54,7 +55,7 @@ router.post("/", upload.single("img"), async function (req, res) {
           const image = fs.createReadStream(filePath);
           console.log();
           const imagePinned = await pinata.pinFileToIPFS(image, imageOptions);
-          if (imagePinned) {
+          if (imagePinned)  {
             console.log(imagePinned.IpfsHash);
             const ipfsCid = imagePinned.IpfsHash;
             const integrity = encodeCID(ipfsCid);
@@ -65,6 +66,9 @@ router.post("/", upload.single("img"), async function (req, res) {
             };
             res.status(200).json(obj);
           }
+          fs.unlink(path, function (err) {
+            console.log(path + " was deleted.");
+          });
         }
       }
 
@@ -79,9 +83,7 @@ router.post("/", upload.single("img"), async function (req, res) {
         }
       });
 
-      fs.unlink(path, function (err) {
-        console.log(path + " was deleted.");
-      });
+  
     }
   } catch (error) {
     console.error(error);
