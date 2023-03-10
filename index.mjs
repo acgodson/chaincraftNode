@@ -46,5 +46,5 @@ const port = process.env.PORT || 4040;
 const server = createServer(app);
 
 server.listen(port, () => {
-  console.log(`Listening to chaincraft-node on ${port}`);
+  console.log(`Listening to osap-node on ${port}`);
 });
